@@ -1,7 +1,7 @@
 
 # Digital Wallet Management System
 
-This project is made by Team xx, a simple Digital Wallet Management System implemented in C++ that allows users to create accounts, transfer funds, view transaction history, and manage wallet balances. The system is designed to be a basic simulation of a wallet system with features such as user registration, money transfers, account merging, and transaction tracking.
+This project is made by Team 25, a simple Digital Wallet Management System implemented in C++ that allows users to create accounts, transfer funds, view transaction history, and manage wallet balances. The system is designed to be a basic simulation of a wallet system with features such as user registration, money transfers, account merging, and transaction tracking.
 
 ## Features
 
