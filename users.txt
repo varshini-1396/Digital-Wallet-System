@@ -1,26 +1,10 @@
-U1001 Aarav 1500.75
-U1002 Isha 2500.5
-U1003 Priya 1800
-U1004 Rohit 2300.25
-U1005 Ananya 1200
-U1006 Viraj 2700.1
-U1007 Neha 1000.8
-U1008 Sanya 3000.45
-U1009 Raj 3500.6
-U1010 Tanvi 2200.3
-U1011 Karan 1900
-U1012 Simran 2100.5
-U1013 Aditya 3200.75
-U1014 Rhea 2900.2
-U1015 Siddhi 1800.95
-U1016 Arjun 2200.6
-U1017 Kavya 2600.1
-U1018 Rahul 2800.3
-U1019 Meera 1500
-U1020 Nikhil 3300.4
-U1021 Aditi 1400.75
-U1022 Manish 1100.5
-U1023 Sneha 2500.6
-U1024 Gautam 2200.8
-U1025 Raghav 4000.0
-
+aarav123 pass123 Aarav 1500.75
+isha456 pass456 Isha 2500.5
+priya789 pass789 Priya 1800
+rohit321 pass321 Rohit 2300.25
+ananya654 pass654 Ananya 1200
+viraj987 pass987 Viraj 3200.1
+neha111 pass111 Neha 1000.8
+sanya222 pass222 Sanya 3000.45
+raj333 pass333 Raj 3500.6
+varshini1396 1396 Varshini 8200.3

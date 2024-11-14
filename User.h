@@ -4,27 +4,32 @@
 #include <string>
 #include <vector>
 #include "Transaction.h"
+
 using namespace std;
 
 class User
 {
-    string userID;
+private:
+    string username;
+    string password;
     string name;
     float balance;
-    vector<Transaction> transactions;
+    vector<Transaction> transactionHistory;
 
 public:
-    User(string id, string nm, float initialBalance);
-    User &operator+=(float amount); // Overloaded operator for adding balance
-    bool deductBalance(float amount);
+    User(const string &username, const string &password, const string &name, float balance);
+
+    const string &getUsername() const; // Return as const reference to avoid unnecessary copying
+    const string &getPassword() const;
+    const string &getName() const;
+    float getBalance() const;
+    bool matches(const string &username, const string &password) const; // Only one declaration of matches function
+
+    void addFunds(float amount);
+    bool deductFunds(float amount);
     void addTransaction(const Transaction &transaction);
+    void showTransactionHistory() const; // Show transaction history
     void showBalance() const;
-    void showTransactionHistory() const;
-    string getUserID() const { return userID; }
-    friend ostream &operator<<(ostream &os, const User &user);
-    friend istream &operator>>(istream &is, User &user);
-    User operator+(const User &other) const;
-    float getBalance() const { return balance; }
 };
 
 #endif

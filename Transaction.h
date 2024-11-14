@@ -7,17 +7,20 @@ using namespace std;
 
 class Transaction
 {
+private:
     int transactionID;
+    float amount;
     string date;
     string senderID;
     string receiverID;
-    float amount;
-
-    friend ostream &operator<<(ostream &os, const Transaction &transaction);
 
 public:
-    Transaction(int id, float amt, string d, string sID, string rID);
+    Transaction(int id = 0, float amt = 0.0f, const string &d = "", const string &sender = "", const string &receiver = "");
     void displayTransaction() const;
+
+    int getTransactionID() const;
+    string getSenderID() const;
+    string getReceiverID() const;
 };
 
 #endif

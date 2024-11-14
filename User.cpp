@@ -1,59 +1,64 @@
 #include "User.h"
 #include <iostream>
-using namespace std;
 
-User::User(string id, string nm, float initialBalance)
-    : userID(id), name(nm), balance(initialBalance) {}
+User::User(const string &username, const string &password, const string &name, float balance)
+    : username(username), password(password), name(name), balance(balance) {}
 
-User &User::operator+=(float amount)
+const string &User::getUsername() const
 {
-    balance += amount;
-    return *this;
+    return username;
 }
 
-bool User::deductBalance(float amount)
+const string &User::getPassword() const
 {
-    if (amount > balance)
-        return false;
-    balance -= amount;
-    return true;
+    return password;
+}
+
+const string &User::getName() const
+{
+    return name;
+}
+
+float User::getBalance() const
+{
+    return balance;
+}
+
+bool User::matches(const string &username, const string &password) const
+{
+    return this->username == username && this->password == password;
+}
+
+void User::addFunds(float amount)
+{
+    balance += amount;
+}
+
+bool User::deductFunds(float amount)
+{
+    if (balance >= amount)
+    {
+        balance -= amount;
+        return true;
+    }
+    return false;
 }
 
 void User::addTransaction(const Transaction &transaction)
 {
-    transactions.push_back(transaction);
-}
-
-void User::showBalance() const
-{
-    cout << "User: " << name << " (ID: " << userID << ") Balance: " << balance << endl;
+    transactionHistory.push_back(transaction);
 }
 
 void User::showTransactionHistory() const
 {
-    cout << "Transaction History for " << name << ":" << endl;
-    for (const auto &t : transactions)
+    cout << "Transaction History for " << username << ":\n";
+    for (const auto &transaction : transactionHistory)
     {
-        t.displayTransaction();
+        transaction.displayTransaction();
     }
 }
 
-ostream &operator<<(ostream &os, const User &user)
+void User::showBalance() const
 {
-    os << user.userID << " " << user.name << " " << user.balance << "\n";
-    return os;
-}
-
-istream &operator>>(istream &is, User &user)
-{
-    is >> user.userID >> user.name >> user.balance;
-    return is;
-}
-
-User User::operator+(const User &other) const
-{
-    User mergedUser(this->userID + "+" + other.userID, this->name + " & " + other.name, this->balance + other.balance);
-    mergedUser.transactions = this->transactions;
-    mergedUser.transactions.insert(mergedUser.transactions.end(), other.transactions.begin(), other.transactions.end());
-    return mergedUser;
+    cout << "Balance for " << username << ": " << balance << endl;
 }

@@ -1,11 +1,11 @@
 #include "Wallet.h"
-#include <iostream>
 #include <fstream>
-#include <limits>
-#include <algorithm> // Added for std::remove
+#include <sstream>
+#include <iostream>
+#include <algorithm> // This header is required for remove_if
 using namespace std;
 
-Wallet::Wallet()
+Wallet::Wallet() : transactionCount(0)
 {
     loadUsers();
 }
@@ -13,127 +13,138 @@ Wallet::Wallet()
 void Wallet::loadUsers()
 {
     ifstream file("users.txt");
-    if (!file)
-        return; // No file found, skip loading
+    string username, password, name;
+    float balance;
 
-    User user("", "", 0.0f);
-    while (file >> user)
+    while (file >> username >> password >> name >> balance)
     {
-        users.push_back(user);
+        users.push_back(User(username, password, name, balance));
     }
-    file.close();
 }
 
 void Wallet::saveUsers()
 {
-    ofstream file("users.txt", ios::trunc);
+    ofstream file("users.txt");
     for (const auto &user : users)
     {
-        file << user;
+        file << user.getUsername() << " "
+             << user.getPassword() << " "
+             << user.getName() << " "
+             << user.getBalance() << endl;
     }
-    file.close();
 }
 
-void Wallet::registerUser(const string &userID, const string &name, float amt)
+void Wallet::registerUser(const string &username, const string &password, const string &name, float amt)
 {
-    if (getUser(userID) != nullptr)
-    {
-        cout << "User ID " << userID << " already exists. Please use a unique User ID." << endl;
-        return;
-    }
-    users.push_back(User(userID, name, amt));
-    cout << "User " << name << " registered successfully with ID: " << userID << endl;
+    users.push_back(User(username, password, name, amt));
     saveUsers();
 }
 
-User *Wallet::getUser(const string &userID)
+User *Wallet::getUser(const string &username, const string &password)
 {
     for (auto &user : users)
     {
-        if (user.getUserID() == userID)
+        if (user.matches(username, password))
+        {
             return &user;
+        }
     }
     return nullptr;
 }
 
-void Wallet::addFunds(const string &userID, float amount)
+bool Wallet::addFunds(const string &username, float amount)
 {
-    User *user = getUser(userID);
-    if (user)
+    for (auto &user : users)
     {
-        *user += amount;
-        cout << "Added " << amount << " to " << userID << "'s wallet." << endl;
-        saveUsers();
+        if (user.getUsername() == username)
+        {
+            user.addFunds(amount);
+            saveUsers(); // Ensure the file is updated after adding funds
+            return true;
+        }
     }
-    else
+    return false;
+}
+
+bool Wallet::deductFunds(const string &username, float amount)
+{
+    for (auto &user : users)
     {
-        cout << "User not found!" << endl;
+        if (user.getUsername() == username)
+        {
+            bool result = user.deductFunds(amount);
+            if (result)
+            {
+                saveUsers(); // Ensure the file is updated after deducting funds
+            }
+            return result;
+        }
     }
+    return false;
 }
 
 bool Wallet::transferFunds(const string &senderID, const string &receiverID, float amount, const string &date)
 {
-    User *sender = getUser(senderID);
-    User *receiver = getUser(receiverID);
+    User *sender = nullptr, *receiver = nullptr;
 
-    if (!sender || !receiver)
+    for (auto &user : users)
     {
-        cout << "Sender or receiver not found!" << endl;
-        return false;
+        if (user.getUsername() == senderID)
+        {
+            sender = &user;
+        }
+        else if (user.getUsername() == receiverID)
+        {
+            receiver = &user;
+        }
     }
 
-    if (!sender->deductBalance(amount))
+    if (sender && receiver && sender->deductFunds(amount))
     {
-        cout << "Insufficient balance in " << senderID << "'s wallet!" << endl;
-        return false;
-    }
+        // Add funds to the receiver's account
+        receiver->addFunds(amount);
 
-    *receiver += amount;
+        // Create and log the transaction for both sender and receiver
+        Transaction transaction(transactionCount++, amount, date, senderID, receiverID);
+        sender->addTransaction(transaction);
+        receiver->addTransaction(transaction);
 
-    transactionCount++;
-    Transaction transaction(transactionCount, amount, date, senderID, receiverID);
-    sender->addTransaction(transaction);
-    receiver->addTransaction(transaction);
-
-    cout << "Transfer successful from " << senderID << " to " << receiverID << " for amount " << amount << endl;
-    saveUsers();
-    return true;
-}
-
-bool Wallet::removeUser(const string &userID)
-{
-    auto it = remove_if(users.begin(), users.end(), [&](const User &u)
-                        { return u.getUserID() == userID; });
-    if (it != users.end())
-    {
-        users.erase(it, users.end());
-        cout << "User with ID " << userID << " has been removed.\n";
-        saveUsers();
+        saveUsers(); // Ensure the file is updated after the transfer
         return true;
     }
-    cout << "User with ID " << userID << " not found.\n";
+
     return false;
 }
 
-void Wallet::mergeAccounts(const string &userID1, const string &userID2)
+bool Wallet::removeUser(const string &username)
 {
-    User *user1 = getUser(userID1);
-    User *user2 = getUser(userID2);
-
-    if (!user1 || !user2)
+    auto it = remove_if(users.begin(), users.end(), [&](const User &user)
+                        { return user.getUsername() == username; });
+    if (it != users.end())
     {
-        cout << "One or both users not found!" << endl;
-        return;
+        users.erase(it, users.end());
+        saveUsers(); // Ensure the file is updated after removing a user
+        return true;
+    }
+    return false;
+}
+
+void Wallet::mergeAccounts(const string &username1, const string &username2)
+{
+    User *user1 = nullptr, *user2 = nullptr;
+
+    for (auto &user : users)
+    {
+        if (user.getUsername() == username1)
+            user1 = &user;
+        if (user.getUsername() == username2)
+            user2 = &user;
     }
 
-    User mergedUser = *user1 + *user2;
-    users.erase(remove_if(users.begin(), users.end(), [&](const User &u)
-                          { return u.getUserID() == userID1 || u.getUserID() == userID2; }),
-                users.end());
-
-    users.push_back(mergedUser);
-
-    cout << "Accounts merged successfully:\n"
-         << mergedUser;
-    saveUsers();
+    if (user1 && user2)
+    {
+        user1->addFunds(user2->getBalance());
+        user1->showBalance();
+        removeUser(username2); // Remove the second account after merging
+    }
 }

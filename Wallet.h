@@ -8,21 +8,26 @@ using namespace std;
 
 class Wallet
 {
+private:
     vector<User> users;
-    int transactionCount = 0;
+    int transactionCount;
 
 public:
-    Wallet(); // Constructor to load users from file
-    void registerUser(const string &userID, const string &name, float amt);
-    User *getUser(const string &userID);
-    void addFunds(const string &userID, float amount);
-    bool transferFunds(const string &senderID, const string &receiverID, float amount, const string &date);
-    bool removeUser(const string &userID);
-    void mergeAccounts(const string &userID1, const string &userID2);
+    Wallet();
 
-private:
-    void loadUsers(); // Load users from file
-    void saveUsers(); // Save users to file
+    void registerUser(const string &username, const string &password, const string &name, float amt);
+    User *getUser(const string &username, const string &password);
+
+    bool addFunds(const string &username, float amount);
+    bool deductFunds(const string &username, float amount);
+
+    bool transferFunds(const string &senderID, const string &receiverID, float amount, const string &date);
+
+    bool removeUser(const string &username);
+    void mergeAccounts(const string &username1, const string &username2);
+
+    void loadUsers();
+    void saveUsers();
 };
 
 #endif

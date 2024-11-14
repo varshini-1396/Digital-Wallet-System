@@ -1,22 +1,16 @@
 #include "Transaction.h"
-#include <iostream>
-using namespace std;
 
-Transaction::Transaction(int id, float amt, string d, string sID, string rID)
-    : transactionID(id), amount(amt), date(d), senderID(sID), receiverID(rID) {}
+Transaction::Transaction(int id, float amt, const string &d, const string &sender, const string &receiver)
+    : transactionID(id), amount(amt), date(d), senderID(sender), receiverID(receiver) {}
 
 void Transaction::displayTransaction() const
 {
-    cout << "Transaction ID: " << transactionID
-         << " | Amount: " << amount
-         << " | Date: " << date
-         << " | Sender: " << senderID
-         << " | Receiver: " << receiverID << endl;
+    cout << "Transaction ID: " << transactionID << ", Amount: " << amount
+         << ", Date: " << date << ", From: " << senderID << " to " << receiverID << endl;
 }
 
-ostream &operator<<(ostream &os, const Transaction &transaction)
-{
-    os << transaction.transactionID << " " << transaction.amount << " "
-       << transaction.date << " " << transaction.senderID << " " << transaction.receiverID << "\n";
-    return os;
-}
+int Transaction::getTransactionID() const { return transactionID; }
+
+string Transaction::getSenderID() const { return senderID; }
+
+string Transaction::getReceiverID() const { return receiverID; }

@@ -1,122 +1,120 @@
 #include <iostream>
+#include <string>
 #include "Wallet.h"
+#include "Transaction.h"
 using namespace std;
 
 int main()
 {
     Wallet wallet;
-    int choice;
+    string username, password, name, date;
+    float amount;
 
-    do
+    while (true)
     {
-        cout << "\n--- Digital Wallet Menu ---\n";
-        cout << "1. Register User\n";
-        cout << "2. Add Funds\n";
-        cout << "3. Deduct Funds\n";
-        cout << "4. Transfer Funds\n";
-        cout << "5. Show Balance\n";
-        cout << "6. Show Transaction History\n";
-        cout << "7. Merge Accounts\n";
-        cout << "0. Exit\n";
-        cout << "Enter your choice: ";
+        cout << "1. Login\n2. Register a new user\n3.Exit\nChoose an option: ";
+        int choice;
         cin >> choice;
 
-        string userID, userID2, name, date;
-        float amount;
-
-        switch (choice)
+        if (choice == 1)
         {
-        case 1:
-            cout << "Enter User ID: ";
-            cin >> userID;
-            cout << "Enter Name: ";
-            cin >> ws;
-            getline(cin, name);
-            cout << "Enter Initial Balance: ";
-            cin >> amount;
-            wallet.registerUser(userID, name, amount);
-            break;
+            cout << "Enter username: ";
+            cin >> username;
+            cout << "Enter password: ";
+            cin >> password;
 
-        case 2: // Add Funds
-            cout << "Enter User ID: ";
-            cin >> userID;
-            cout << "Enter Amount to Add: ";
-            cin >> amount;
-            wallet.addFunds(userID, amount);
-            break;
-
-        case 3: // Deduct Funds
-            cout << "Enter User ID: ";
-            cin >> userID;
-            cout << "Enter Amount to Deduct: ";
-            cin >> amount;
-            if (wallet.getUser(userID) && wallet.getUser(userID)->deductBalance(amount))
+            User *currentUser = wallet.getUser(username, password);
+            if (currentUser)
             {
-                cout << "Deducted " << amount << " from " << userID << "'s wallet.\n";
-                wallet.getUser(userID)->showBalance();
+                cout << "Login successful! Welcome, " << currentUser->getName() << "." << endl;
+                while (true)
+                {
+                    cout << "1. Add funds\n2. Deduct funds\n3. Transfer funds\n4. Show balance\n5. Show transaction history\n6. Merge accounts\n7. Logout\nChoose an option: ";
+                    cin >> choice;
+
+                    if (choice == 1)
+                    {
+                        cout << "Enter amount to add: ";
+                        cin >> amount;
+                        wallet.addFunds(username, amount);
+                    }
+                    else if (choice == 2)
+                    {
+                        cout << "Enter amount to deduct: ";
+                        cin >> amount;
+                        if (wallet.deductFunds(username, amount))
+                        {
+                            cout << "Deduction successful!" << endl;
+                        }
+                        else
+                        {
+                            cout << "Insufficient funds!" << endl;
+                        }
+                    }
+                    else if (choice == 3)
+                    {
+                        string receiver;
+                        cout << "Enter receiver username: ";
+                        cin >> receiver;
+                        cout << "Enter amount to transfer: ";
+                        cin >> amount;
+                        if (amount < 0)
+                            cout << "Enter correct amount " << endl;
+                        cout << "Enter date (YYYY-MM-DD): ";
+                        cin >> date;
+
+                        if (wallet.transferFunds(username, receiver, amount, date))
+                        {
+                            cout << "Transfer successful!" << endl;
+                        }
+                        else
+                        {
+                            cout << "Transfer failed!" << endl;
+                        }
+                    }
+                    else if (choice == 4)
+                    {
+                        currentUser->showBalance();
+                    }
+                    else if (choice == 5)
+                    {
+                        currentUser->showTransactionHistory();
+                    }
+                    else if (choice == 6)
+                    {
+                        string username2;
+                        cout << "Enter the username of the account to merge: ";
+                        cin >> username2;
+                        wallet.mergeAccounts(username, username2);
+                    }
+                    else if (choice == 7)
+                    {
+                        break;
+                    }
+                }
             }
             else
             {
-                cout << "Insufficient balance or user not found.\n";
+                cout << "Invalid username or password.\n";
             }
-            break;
-
-        case 4: // Transfer Funds
-            cout << "Enter Sender User ID: ";
-            cin >> userID;
-            cout << "Enter Receiver User ID: ";
-            cin >> userID2;
-            cout << "Enter Amount to Transfer: ";
+        }
+        else if (choice == 2)
+        {
+            cout << "Enter new username: ";
+            cin >> username;
+            cout << "Enter new password: ";
+            cin >> password;
+            cout << "Enter name: ";
+            cin >> name;
+            cout << "Enter initial balance: ";
             cin >> amount;
-            cout << "Enter Date: ";
-            cin >> ws;
-            getline(cin, date);
-            wallet.transferFunds(userID, userID2, amount, date);
-            break;
-
-        case 5: // Show Balance
-            cout << "Enter User ID: ";
-            cin >> userID;
-            if (wallet.getUser(userID))
-            {
-                wallet.getUser(userID)->showBalance();
-            }
-            else
-            {
-                cout << "User not found.\n";
-            }
-            break;
-
-        case 6: // Show Transaction History
-            cout << "Enter User ID: ";
-            cin >> userID;
-            if (wallet.getUser(userID))
-            {
-                wallet.getUser(userID)->showTransactionHistory();
-            }
-            else
-            {
-                cout << "User not found.\n";
-            }
-            break;
-
-        case 7: // Merge Accounts
-            cout << "Enter First User ID: ";
-            cin >> userID;
-            cout << "Enter Second User ID: ";
-            cin >> userID2;
-            wallet.mergeAccounts(userID, userID2);
-            break;
-
-        case 0:
-            cout << "Exiting Digital Wallet. Goodbye!\n";
-            break;
-
-        default:
-            cout << "Invalid choice. Please try again.\n";
+            wallet.registerUser(username, password, name, amount);
+        }
+        else
+        {
             break;
         }
-    } while (choice != 0);
+    }
 
     return 0;
 }
