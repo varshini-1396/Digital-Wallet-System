@@ -14,7 +14,8 @@ void Transaction::displayTransaction() const
          << " | Receiver: " << receiverID << endl;
 }
 
-ostream &operator<<(ostream &os, const Transaction &transaction) {
+ostream &operator<<(ostream &os, const Transaction &transaction)
+{
     os << transaction.transactionID << " " << transaction.amount << " "
        << transaction.date << " " << transaction.senderID << " " << transaction.receiverID << "\n";
     return os;
