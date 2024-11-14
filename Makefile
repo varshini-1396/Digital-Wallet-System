@@ -15,9 +15,16 @@ OBJDIR = obj
 # Automatically generated list of .o files based on .cpp file names
 OBJECTS = $(patsubst %.cpp, $(OBJDIR)/%.o, $(SOURCES))
 
-# Default target to build the executable
+# Default target
+all: $(TARGET)
+
+# Link the executable
 $(TARGET): $(OBJECTS)
-	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJECTS)
+	$(CXX) $(OBJECTS) -o $(TARGET)
+
+# Compile each .cpp file into .o file
+$(OBJDIR)/%.o: %.cpp | $(OBJDIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(OBJDIR):
 	mkdir -p $(OBJDIR)
@@ -29,3 +36,10 @@ $(OBJDIR):
 # Clean target to remove object files and the executable
 clean:
 	rm -rf $(OBJECTS) $(TARGET)
+	rmdir obj
+
+test:
+	@echo "Running tests..."
+
+# Phony targets
+.PHONY: all clean
