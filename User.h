@@ -7,8 +7,13 @@
 
 using namespace std;
 
-class User
-{
+class BaseUser {
+public:
+    virtual void showDetails() const = 0;
+    virtual ~BaseUser() = default;
+};
+
+class User : public BaseUser {
 private:
     string username;
     string password;
@@ -19,17 +24,24 @@ private:
 public:
     User(const string &username, const string &password, const string &name, float balance);
 
-    const string &getUsername() const; // Return as const reference to avoid unnecessary copying
-    const string &getPassword() const;
-    const string &getName() const;
+    const string& getUsername() const;
+    const string& getPassword() const;
+    const string& getName() const;
     float getBalance() const;
-    bool matches(const string &username, const string &password) const; // Only one declaration of matches function
 
+    bool matches(const string &username, const string &password) const;
     void addFunds(float amount);
     bool deductFunds(float amount);
     void addTransaction(const Transaction &transaction);
-    void showTransactionHistory() const; // Show transaction history
-    void showBalance() const;
+
+    void showTransactionHistory() const;
+    void showBalance() const;       // Add this line
+    void showDetails() const override;
+
+    User operator+(const User &other);
+
+    friend ostream& operator<<(ostream &os, const User &user);
+    friend istream& operator>>(istream &is, User &user);
 };
 
 #endif
